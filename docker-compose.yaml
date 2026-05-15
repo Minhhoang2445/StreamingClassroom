@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: streaming_db_container
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass "local_redis_password"
+    ports:
+      - "6380:6379"
+
+  # 2. Khởi tạo LiveKit Server
+  livekit:
+    image: livekit/livekit-server:latest
+    command: --config /etc/livekit.yaml
+    ports:
+      - "7880:7880"             # Port API (Spring Boot & React sẽ gọi vào đây)
+      - "7881:7881"             # TCP WebRTC fallback
+      - "7882:7882/udp"         # TURN server
+      - "50000-50050:50000-50050/udp" # UDP WebRTC (Truyền Video/Audio)
+    volumes:
+      - ./livekit.yaml:/etc/livekit.yaml
+    depends_on:
+      - redis
+volumes:
+  pgdata:

@@ -1,0 +1,19 @@
+port: 7880
+rtc:
+  tcp_port: 7881
+  port_range_start: 50000
+  port_range_end: 50050
+  use_external_ip: false
+  enable_loopback_candidate: true
+redis:
+  address: redis:6379
+  password: "123456"
+keys:
+  # Cấu trúc: [API_KEY]: [API_SECRET]
+  # Bạn sẽ dùng cặp key này cho Spring Boot ở bước sau
+  devkey: secret
+
+webhook:
+  api_key: "devkey" 
+  urls:
+    - "http://host.docker.internal:8080/api/webhooks/livekit" 
