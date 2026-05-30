@@ -18,18 +18,28 @@ public class StreamService {
     @Value("${livekit.api.secret}")
     private String LIVEKIT_API_SECRET; 
 
-    public String generateToken(String roomName, String identity, boolean isTeacher) {
+    public String generateToken(String roomName, String identity, String displayName, boolean isRoomAdmin) {
         AccessToken token = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET); 
-        token.setName(identity); 
-        token.setIdentity(identity);
-        
-        if (isTeacher) {
-            token.addGrants(new RoomJoin(true), new RoomName(roomName), new RoomAdmin(true)); 
+        token.setIdentity(identity); //identity la id cua nguoi dung 
+        token.setName(displayName); //displayName la ten hien thi cua nguoi dung khi tham gia phong
+
+        if (isRoomAdmin) {
+            token.addGrants(
+                    new RoomJoin(true),
+                    new RoomName(roomName),
+                    new RoomAdmin(true)
+            );
         } else {
-            token.addGrants(new RoomJoin(true), new RoomName(roomName)); 
+            token.addGrants(
+                    new RoomJoin(true),
+                    new RoomName(roomName)
+            );
         }
+
         return token.toJwt();
     }
+}
+
 
      
-}
+

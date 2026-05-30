@@ -7,11 +7,11 @@ rtc:
   enable_loopback_candidate: true
 redis:
   address: redis:6379
-  password: "123456"
+  password: "local_redis_password"
 keys:
   # Cấu trúc: [API_KEY]: [API_SECRET]
   # Bạn sẽ dùng cặp key này cho Spring Boot ở bước sau
-  devkey: secret
+  devkey: r9j1PzXcUuBqQ7nYvS6ZkH0mL2aA8sD4tF3pW9xV1k=
 
 webhook:
   api_key: "devkey" 

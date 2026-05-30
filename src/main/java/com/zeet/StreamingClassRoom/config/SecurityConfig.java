@@ -32,7 +32,8 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable) // Tắt CSRF (Bắt buộc khi dùng API + JWT)
             .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/auth/**").permitAll() // Mở khóa hoàn toàn cho nhánh Auth (Login, Register)
+            .requestMatchers("/api/auth/**").permitAll() // Mở khóa hoàn toàn cho nhánh Auth (Login, Register) sau chinh lai thanh /api/auth/** */
+            .requestMatchers("/api/webhooks/**").permitAll()
             .anyRequest().authenticated() // Các API khác (tạo phòng, xem profile...) phải có JWT mới được vào
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
