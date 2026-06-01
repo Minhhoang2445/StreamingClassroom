@@ -56,4 +56,23 @@ public class ChatMessage {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "message_type", nullable = false)
+    private ChatMessageType messageType = ChatMessageType.TEXT;
+
+    @Column(name = "file_name")
+    private String fileName;
+
+    @Column(name = "file_path", columnDefinition = "TEXT")
+    private String filePath;
+
+    @Column(name = "file_url", columnDefinition = "TEXT")
+    private String fileUrl;
+
+    @Column(name = "file_type")
+    private String fileType;
+
+    @Column(name = "file_size")
+    private Long fileSize;
 }

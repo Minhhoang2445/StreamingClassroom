@@ -3,6 +3,7 @@ package com.zeet.StreamingClassRoom.DTO;
 import java.time.LocalDateTime;
 
 import com.zeet.StreamingClassRoom.model.ChatMessageStatus;
+import com.zeet.StreamingClassRoom.model.ChatMessageType;
 import com.zeet.StreamingClassRoom.model.Role;
 
 public record ChatMessageResponse(
@@ -13,6 +14,11 @@ public record ChatMessageResponse(
         Role senderRole,
         String content,
         ChatMessageStatus status,
+        ChatMessageType messageType,
+        String fileName,
+        String fileUrl,
+        String fileType,
+        Long fileSize,
         LocalDateTime createdAt
 ) {
 }

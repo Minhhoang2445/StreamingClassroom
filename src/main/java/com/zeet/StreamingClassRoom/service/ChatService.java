@@ -14,6 +14,7 @@ import com.zeet.StreamingClassRoom.exception.ForbiddenException;
 import com.zeet.StreamingClassRoom.exception.ResourceNotFoundException;
 import com.zeet.StreamingClassRoom.model.ChatMessage;
 import com.zeet.StreamingClassRoom.model.ChatMessageStatus;
+import com.zeet.StreamingClassRoom.model.ChatMessageType;
 import com.zeet.StreamingClassRoom.model.LiveSession;
 import com.zeet.StreamingClassRoom.model.User;
 import com.zeet.StreamingClassRoom.repository.ChatMessageRepository;
@@ -48,6 +49,7 @@ public class ChatService {
         message.setSender(currentUser);
         message.setContent(request.content().trim());
         message.setStatus(ChatMessageStatus.SENT);
+        message.setMessageType(ChatMessageType.TEXT);
 
         ChatMessage savedMessage = chatMessageRepository.save(message);
 
@@ -98,14 +100,19 @@ public class ChatService {
 
     private ChatMessageResponse mapToResponse(ChatMessage message) {
         return new ChatMessageResponse(
-                message.getId(),
-                message.getSession().getId(),
-                message.getSender().getId(),
-                message.getSender().getUsername(),
-                message.getSender().getRole(),
-                message.getContent(),
-                message.getStatus(),
-                message.getCreatedAt()
+            message.getId(),
+            message.getSession().getId(),
+            message.getSender().getId(),
+            message.getSender().getUsername(),
+            message.getSender().getRole(),
+            message.getContent(),
+            message.getStatus(),
+            message.getMessageType(),
+            message.getFileName(),
+            message.getFileUrl(),
+            message.getFileType(),
+            message.getFileSize(),
+            message.getCreatedAt()
         );
     }
 }
