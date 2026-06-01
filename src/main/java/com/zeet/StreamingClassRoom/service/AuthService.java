@@ -6,6 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.zeet.StreamingClassRoom.DTO.AuthResponse;
 import com.zeet.StreamingClassRoom.DTO.LoginRequest;
 import com.zeet.StreamingClassRoom.DTO.RegisterRequest;
 import com.zeet.StreamingClassRoom.model.RefreshToken;
@@ -17,47 +18,79 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    
+
     private final AuthRepository authRepository;
-    private final PasswordEncoder encoder; 
+    private final PasswordEncoder encoder;
     private final JWTService jwtService;
-    private final AuthenticationManager authenticationManager; 
+    private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
-    
+
     public void register(RegisterRequest user) {
         if (authRepository.findByUsername(user.username()) != null) {
             throw new RuntimeException("Username already exists");
         }
-        var newUser = new User();
+
+        User newUser = new User();
         newUser.setUsername(user.username());
         newUser.setPasswordHash(encoder.encode(user.password()));
         newUser.setRole(user.role());
+
         authRepository.save(newUser);
     }
 
-    public String login(LoginRequest loginRequest) {
+    public AuthResponse login(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                loginRequest.username(), 
-                loginRequest.password()
-            )
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.username(),
+                        loginRequest.password()
+                )
         );
-            var userDetails = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
-            String userName = userDetails.getUsername();
-            String role = userDetails.getAuthorities().iterator().next().getAuthority();
-            return jwtService.generateAccessToken(userName, role);
-        
+
+        var userDetails =
+                (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+
+        String username = userDetails.getUsername();
+        String role = userDetails.getAuthorities()
+                .iterator()
+                .next()
+                .getAuthority();
+
+        User user = authRepository.findByUsername(username);
+
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        String accessToken = jwtService.generateAccessToken(username, role);
+
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+
+        return new AuthResponse(
+                accessToken,
+                refreshToken.getToken(),
+                "Bearer"
+        );
     }
+    public AuthResponse refreshToken(String refreshTokenValue) {
+        RefreshToken oldRefreshToken =
+                refreshTokenService.validateRefreshToken(refreshTokenValue);
 
-    public String refreshAccessToken(String refreshToken) {
-            return refreshTokenService.findByToken(refreshToken)
-            .map(refreshTokenService::verifyExpiration)
-            .map(RefreshToken::getUser)
-            .map(user -> {
-                String role = user.getRole().name(); 
-                return jwtService.generateAccessToken(user.getUsername(), "ROLE_" + role);
-            })
-            .orElseThrow(() -> new RuntimeException("Refresh token không tồn tại trong hệ thống!"));
+        User user = oldRefreshToken.getUser();
 
+        String role = "ROLE_" + user.getRole().name();
+
+        String newAccessToken =
+                jwtService.generateAccessToken(user.getUsername(), role);
+
+        refreshTokenService.revokeToken(oldRefreshToken.getToken());
+
+        RefreshToken newRefreshToken =
+                refreshTokenService.createRefreshToken(user);
+
+        return new AuthResponse(
+                newAccessToken,
+                newRefreshToken.getToken(),
+                "Bearer"
+        );
     }
 }

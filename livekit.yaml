@@ -5,6 +5,7 @@ rtc:
   port_range_end: 50050
   use_external_ip: false
   enable_loopback_candidate: true
+  node_ip: 10.42.0.1
 redis:
   address: redis:6379
   password: "local_redis_password"

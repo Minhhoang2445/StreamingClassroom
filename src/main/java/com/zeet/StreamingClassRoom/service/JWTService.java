@@ -36,6 +36,7 @@ public class JWTService {
                 .compact();
     }
 
+    
     private SecretKey getKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
@@ -71,6 +72,10 @@ public class JWTService {
         } catch (Exception e) {
             return false; 
         }
+    }
+
+    public String extractUsername(String jwt) {
+        return extractClaim(jwt, Claims::getSubject);
     }
 
     

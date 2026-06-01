@@ -1,6 +1,7 @@
 package com.zeet.StreamingClassRoom.model;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,7 +14,9 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "refresh_tokens")
@@ -21,6 +24,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class RefreshToken {
 
     @Id
@@ -31,7 +36,7 @@ public class RefreshToken {
     private String token;
 
     @Column(nullable = false)
-    private Instant expiryDate; // Dùng Instant cho thời gian chuẩn xác nhất
+    private LocalDateTime expiryDate; // Dùng Instant cho thời gian chuẩn xác nhất
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
